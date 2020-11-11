@@ -4,6 +4,9 @@ from gen.BCCParser import BCCParser
 
 class MyVisitor(BCCVisitor):
 
+    def __init__(self, file):
+        self.file = file
+
     # Visit a parse tree produced by BCCParser#prog.
     def visitProg(self, ctx: BCCParser.ProgContext):
         return self.visitChildren(ctx)
@@ -14,7 +17,10 @@ class MyVisitor(BCCVisitor):
 
     # Visit a parse tree produced by BCCParser#main_prog.
     def visitMain_prog(self, ctx: BCCParser.Main_progContext):
-        return self.visitChildren(ctx)
+        self.file.write("IT'S SHOWTIME\n")
+        self.visitChildren(ctx)
+        self.file.write("YOU HAVE BEEN TERMINATED")
+        return
 
     # Visit a parse tree produced by BCCParser#stmt_var_list.
     def visitStmt_var_list(self, ctx: BCCParser.Stmt_var_listContext):
@@ -30,6 +36,14 @@ class MyVisitor(BCCVisitor):
 
     # Visit a parse tree produced by BCCParser#stmt.
     def visitStmt(self, ctx: BCCParser.StmtContext):
+        if ctx.PRINT():
+            self.file.write('TALK TO THE HAND '+ctx.getChild(1).getText()+'\n')
+        if ctx.INPUT():
+            command = 'I WANT TO ASK YOU A BUNCH OF QUESTIONS AND I WANT TO HAVE THEM ANSWERED IMMEDIATELY '
+            self.file.write(command+ctx.getChild(1).getText()+'\n')
+        if ctx.WHEN():
+            command = 'I WANT TO ASK YOU A BUNCH OF QUESTIONS AND I WANT TO HAVE THEM ANSWERED IMMEDIATELY '
+            self.file.write(command+ctx.getChild(1).getText()+'\n')
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#assignation.
