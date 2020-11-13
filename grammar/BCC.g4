@@ -19,7 +19,7 @@ stmt_block : '{' stmt* '}'
 stmt : PRINT lexpr ';'
       | INPUT ID ';'
       | WHEN par_lexpr do_block
-      | IF par_lexpr do_block (ELSE stmt_block)
+      | IF par_lexpr do_block ELSE stmt_block
       | CICLE par_lexpr do_block 
       | do_block CICLE2 par_lexpr
       | RETURN lexpr ';'

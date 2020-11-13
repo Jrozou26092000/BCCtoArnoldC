@@ -1,5 +1,6 @@
 ## funcion min(x, y)
 function @min:num (x:num, y:num)
+    var minn:bool;
   {
   when ((x < y) == true) do return x++;
   return y;
@@ -19,5 +20,7 @@ function @max:num (x:num, y:num)
   }
 
 print @min(x++,2);
-print @max(1,2);
+x++;
+x:=y+3;
+print @max(++x,false);
 end

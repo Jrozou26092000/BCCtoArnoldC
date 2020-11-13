@@ -1,6 +1,5 @@
 from gen.BCCVisitor import BCCVisitor
 from gen.BCCParser import BCCParser
-import os
 
 
 class MyVisitor(BCCVisitor):
@@ -8,9 +7,6 @@ class MyVisitor(BCCVisitor):
     def __init__(self, file):
         self.file = file
         self.result = 0
-        dirname = os.path.dirname(__file__)
-        modulo = open(dirname+'/modulo')
-        self.file.write(modulo.read()+'\n\n')
 
     # Visit a parse tree produced by BCCParser#prog.
     def visitProg(self, ctx: BCCParser.ProgContext):
@@ -18,7 +14,11 @@ class MyVisitor(BCCVisitor):
 
     # Visit a parse tree produced by BCCParser#f.
     def visitF(self, ctx: BCCParser.FContext):
-        return self.visitChildren(ctx)
+        self.file.write('LISTEN TO ME VERY CAREFULLY '+ctx.FID().getText()[1:]+'\n')
+        for dec in ctx.var_dec():
+            self.file.write('I NEED YOUR CLOTHES YOUR BOOTS AND YOUR MOTORCYCLE '+dec.ID().getText()+'\n')
+        self.visitChildren(ctx)
+        self.file.write('HASTA LA VISTA, BABY\n')
 
     # Visit a parse tree produced by BCCParser#main_prog.
     def visitMain_prog(self, ctx: BCCParser.Main_progContext):
@@ -29,6 +29,9 @@ class MyVisitor(BCCVisitor):
 
     # Visit a parse tree produced by BCCParser#stmt_var_list.
     def visitStmt_var_list(self, ctx: BCCParser.Stmt_var_listContext):
+        for var in ctx.var_dec():
+            self.file.write('HEY CHRISTMAS TREE '+var.ID().getText()+'\n')
+            self.file.write('YOU SET US UP 0\n')
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#var_dec.
@@ -49,17 +52,20 @@ class MyVisitor(BCCVisitor):
         if ctx.INPUT():
             command = 'I WANT TO ASK YOU A BUNCH OF QUESTIONS AND I WANT TO HAVE THEM ANSWERED IMMEDIATELY '
             self.file.write(command+ctx.getChild(1).getText()+'\n')
-        # if ctx.WHEN():
-        #     command = 'I WANT TO ASK YOU A BUNCH OF QUESTIONS AND I WANT TO HAVE THEM ANSWERED IMMEDIATELY '
-        #     self.file.write(command+ctx.getChild(1).getText()+'\n')
+        if ctx.WHEN():
+            
+            command = "BECAUSE I'M GOING TO SAY PLEASE "
+            self.file.write(command+ctx.getChild(1).getText()+'\n')
+        if ctx.RETURN():
+            self.file.write("I'LL BE BACK "+ctx.getChild(1).getText()+'\n')
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#assignation.
     def visitAssignation(self, ctx: BCCParser.AssignationContext):
-        if ctx.ID():
-            self.file.write('GET TO THE CHOPPER' + ctx.ID().getText()+'\n')
-            self.file.write('HERE IS MY INVITATION')
-            self.visitOperation()
+        if ctx.operation():
+            self.file.write('GET TO THE CHOPPER ' + ctx.ID().getText()+'\n')
+            self.file.write('HERE IS MY INVITATION ')
+            self.visitOperation(ctx.operation())
             self.file.write('ENOUGH TALK\n')
         else:
             self.file.write("GET TO THE CHOPPER "+ctx.ID().getText()+'\n')
@@ -69,7 +75,6 @@ class MyVisitor(BCCVisitor):
             else:
                 self.file.write("GET DOWN 1\n")
             self.file.write("ENOUGH TALK\n")
-        return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#do_block.
     def visitDo_block(self, ctx: BCCParser.Do_blockContext):
@@ -81,6 +86,14 @@ class MyVisitor(BCCVisitor):
 
     # Visit a parse tree produced by BCCParser#operation.
     def visitOperation(self, ctx: BCCParser.OperationContext):
+        if ctx.getChild(0).getText() == '++':
+            self.file.write(ctx.parentCtx.ID().getText()+'\n')
+            self.file.write("GET UP 1\n")
+            return
+        if ctx.getChild(0).getText() == '--':
+            self.file.write(ctx.parentCtx.ID().getText()+'\n')
+            self.file.write("GET DOWN 1\n")
+            return
         var = self.visitLexpr(ctx.lexpr())
         if ctx.getChild(0).getText() == ':=':
             self.file.write(var + '\n')
@@ -94,13 +107,9 @@ class MyVisitor(BCCVisitor):
             self.file.write('HE HAD TO SPLIT' + var + '\n')
         if ctx.getChild(0).getText() == '%=':
             self.file.write('I LET HIM GO' + var + '\n')
-        if ctx.getChild(0).getText() == '++':
-            self.file.write("GET UP 1\n")
-        if ctx.getChild(0).getText() == '--':
-            self.file.write("GET DOWN 1\n")
-        return self.visitChildren(ctx)
+        return
 
-    # Visit a parse tree produced by BCCParser#lexpr.
+        # Visit a parse tree produced by BCCParser#lexpr.
     def visitLexpr(self, ctx: BCCParser.LexprContext):
         if ctx.getChildCount() > 1:
             self.visitNexpr(ctx.getChild(0))
