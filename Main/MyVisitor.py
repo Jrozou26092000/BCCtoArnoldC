@@ -59,7 +59,7 @@ class MyVisitor(BCCVisitor):
         if ctx.ID():
             self.file.write('GET TO THE CHOPPER' + ctx.ID().getText()+'\n')
             self.file.write('HERE IS MY INVITATION')
-            self.visitChildren(ctx.getChild(1))
+            self.visitOperation()
             self.file.write('ENOUGH TALK\n')
         else:
             self.file.write("GET TO THE CHOPPER "+ctx.ID().getText()+'\n')
@@ -81,26 +81,36 @@ class MyVisitor(BCCVisitor):
 
     # Visit a parse tree produced by BCCParser#operation.
     def visitOperation(self, ctx: BCCParser.OperationContext):
+        var = self.visitLexpr(ctx.lexpr())
         if ctx.getChild(0).getText() == ':=':
-            self.visitChildren(ctx.getChild(0))
+            self.file.write(var + '\n')
         if ctx.getChild(0).getText() == '+=':
-            # en este contexto no hay ID hay lexpr mire la gramatica
-            # si intellij marca que no existe es verdad que no existe
-            self.file.write("GET TO THE CHOPPER "+ctx.ID().getText()+'\n')
-            self.file.write("HERE IS MY INVITATION "+ctx.ID().getText()+'\n')
-            self.file.write("GET UP")  # duda :v
+            self.file.write('GET UP' + var + '\n')
         if ctx.getChild(0).getText() == '-=':
-            self.file.write("GET TO THE CHOPPER "+ctx.ID().getText()+'\n')
-            self.file.write("HERE IS MY INVITATION "+ctx.ID().getText()+'\n')
-            self.file.write("GET DOWN")  # duda :v
+            self.file.write('GET DOWN' + var + '\n')
         if ctx.getChild(0).getText() == '*=':
-            self.file.write("GET TO THE CHOPPER "+ctx.ID().getText()+'\n')
-            self.file.write("HERE IS MY INVITATION "+ctx.ID().getText()+'\n')
-            self.file.write("GET DOWN")  # duda :v
+            self.file.write("YOU'RE FIRED" + var + '\n')
+        if ctx.getChild(0).getText() == '/=':
+            self.file.write('HE HAD TO SPLIT' + var + '\n')
+        if ctx.getChild(0).getText() == '%=':
+            self.file.write('I LET HIM GO' + var + '\n')
+        if ctx.getChild(0).getText() == '++':
+            self.file.write("GET UP 1\n")
+        if ctx.getChild(0).getText() == '--':
+            self.file.write("GET DOWN 1\n")
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#lexpr.
     def visitLexpr(self, ctx: BCCParser.LexprContext):
+        if ctx.getChildCount() > 1:
+            self.visitNexpr(ctx.getChild(0))
+            if ctx.getChild(1) == ctx.AND():
+                self.file.write('KNOCK KNOCK')
+            if ctx.getChild(1) == ctx.OR():
+                self.file.write('CONSIDER THAT A DIVORCE')
+            self.visitNexpr(ctx.getChild(2))
+        else:
+            self.visitNexpr(ctx.getChild(0))
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#nexpr.
