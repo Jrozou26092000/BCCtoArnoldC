@@ -32,7 +32,6 @@ class MyVisitor(BCCVisitor):
         for var in ctx.var_dec():
             self.file.write('HEY CHRISTMAS TREE '+var.ID().getText()+'\n')
             self.file.write('YOU SET US UP 0\n')
-        return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#var_dec.
     def visitVar_dec(self, ctx: BCCParser.Var_decContext):
@@ -48,16 +47,20 @@ class MyVisitor(BCCVisitor):
             children = self.visitLexpr(ctx.lexpr()[0])
             self.file.write('TALK TO THE HAND '+str(children))
             self.file.write('\n')
-            return None
+            return
         if ctx.INPUT():
             command = 'I WANT TO ASK YOU A BUNCH OF QUESTIONS AND I WANT TO HAVE THEM ANSWERED IMMEDIATELY '
             self.file.write(command+ctx.getChild(1).getText()+'\n')
+            return
         if ctx.WHEN():
-            
-            command = "BECAUSE I'M GOING TO SAY PLEASE "
-            self.file.write(command+ctx.getChild(1).getText()+'\n')
+            condition = self.visitPar_lexpr(ctx.par_lexpr())
+            self.file.write("BECAUSE I'M GOING TO SAY PLEASE "+condition+'\n')
+            self.visitChildren(ctx)
+            self.file.write("YOU HAVE NO RESPECT FOR LOGIC\n")
+            return
         if ctx.RETURN():
             self.file.write("I'LL BE BACK "+ctx.getChild(1).getText()+'\n')
+            return
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#assignation.
@@ -82,7 +85,7 @@ class MyVisitor(BCCVisitor):
 
     # Visit a parse tree produced by BCCParser#par_lexpr.
     def visitPar_lexpr(self, ctx: BCCParser.Par_lexprContext):
-        return self.visitChildren(ctx)
+        return self.visitLexpr(ctx.lexpr())
 
     # Visit a parse tree produced by BCCParser#operation.
     def visitOperation(self, ctx: BCCParser.OperationContext):
@@ -111,15 +114,15 @@ class MyVisitor(BCCVisitor):
 
         # Visit a parse tree produced by BCCParser#lexpr.
     def visitLexpr(self, ctx: BCCParser.LexprContext):
-        if ctx.getChildCount() > 1:
-            self.visitNexpr(ctx.getChild(0))
-            if ctx.getChild(1) == ctx.AND():
-                self.file.write('KNOCK KNOCK')
-            if ctx.getChild(1) == ctx.OR():
-                self.file.write('CONSIDER THAT A DIVORCE')
-            self.visitNexpr(ctx.getChild(2))
-        else:
-            self.visitNexpr(ctx.getChild(0))
+        # if ctx.getChildCount() > 1:
+        #     self.visitNexpr(ctx.getChild(0))
+        #     if ctx.getChild(1) == ctx.AND():
+        #         self.file.write('KNOCK KNOCK')
+        #     if ctx.getChild(1) == ctx.OR():
+        #         self.file.write('CONSIDER THAT A DIVORCE')
+        #     self.visitNexpr(ctx.getChild(2))
+        # else:
+        #     self.visitNexpr(ctx.getChild(0))
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#nexpr.

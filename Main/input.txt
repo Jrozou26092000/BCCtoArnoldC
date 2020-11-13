@@ -20,7 +20,5 @@ function @max:num (x:num, y:num)
   }
 
 print @min(x++,2);
-x++;
-x:=y+3;
 print @max(++x,false);
 end
