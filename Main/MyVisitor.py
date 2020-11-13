@@ -1,5 +1,6 @@
 from gen.BCCVisitor import BCCVisitor
 from gen.BCCParser import BCCParser
+import os
 
 
 class MyVisitor(BCCVisitor):
@@ -7,6 +8,9 @@ class MyVisitor(BCCVisitor):
     def __init__(self, file):
         self.file = file
         self.result = 0
+        dirname = os.path.dirname(__file__)
+        modulo = open(dirname+'/modulo')
+        self.file.write(modulo.read()+'\n\n')
 
     # Visit a parse tree produced by BCCParser#prog.
     def visitProg(self, ctx: BCCParser.ProgContext):
