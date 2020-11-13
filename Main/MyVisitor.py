@@ -6,6 +6,7 @@ class MyVisitor(BCCVisitor):
 
     def __init__(self, file):
         self.file = file
+        self.result = 0
 
     # Visit a parse tree produced by BCCParser#prog.
     def visitProg(self, ctx: BCCParser.ProgContext):
@@ -37,7 +38,17 @@ class MyVisitor(BCCVisitor):
     # Visit a parse tree produced by BCCParser#stmt.
     def visitStmt(self, ctx: BCCParser.StmtContext):
         if ctx.PRINT():
-            self.file.write('TALK TO THE HAND '+ctx.getChild(1).getText()+'\n')
+            if '@' in ctx.getChild(1).getText():
+                children = self.visitChildren(ctx)
+                self.file.write('TALK TO THE HAND result'+str(self.result))
+                if children:
+                    for i in children:
+                        if i == children[0]:
+                            continue
+                        self.file.write(' '+i)
+                self.file.write('\n')
+            else:
+                self.file.write('TALK TO THE HAND '+ctx.getChild(1).getText()+'\n')
         if ctx.INPUT():
             command = 'I WANT TO ASK YOU A BUNCH OF QUESTIONS AND I WANT TO HAVE THEM ANSWERED IMMEDIATELY '
             self.file.write(command+ctx.getChild(1).getText()+'\n')
@@ -48,7 +59,19 @@ class MyVisitor(BCCVisitor):
 
     # Visit a parse tree produced by BCCParser#assignation.
     def visitAssignation(self, ctx: BCCParser.AssignationContext):
-        return self.visitChildren(ctx)
+        if ctx.ID():
+            self.file.write('GET TO THE CHOPPER' + ctx.ID().getText()+'\n')
+            self.file.write('HERE IS MY INVITATION')
+            self.visitChildren(ctx.getChild(1))
+            self.file.write('ENOUGH TALK\n')
+        else:
+            self.file.write("GET TO THE CHOPPER "+ctx.ID().getText()+'\n')
+            self.file.write("HERE IS MY INVITATION "+ctx.ID().getText()+'\n')
+            if ctx.getChild(0).getText() == '++':
+                self.file.write("GET UP 1\n")
+            else:
+                self.file.write("GET DOWN 1\n")
+            self.file.write("ENOUGH TALK\n")
 
     # Visit a parse tree produced by BCCParser#do_block.
     def visitDo_block(self, ctx: BCCParser.Do_blockContext):
@@ -60,6 +83,22 @@ class MyVisitor(BCCVisitor):
 
     # Visit a parse tree produced by BCCParser#operation.
     def visitOperation(self, ctx: BCCParser.OperationContext):
+        if ctx.getChild(0).getText() == ':=':
+            self.visitChildren(ctx.getChild(0))
+        if ctx.getChild(0).getText() == '+=':
+            # en este contexto no hay ID hay lexpr mire la gramatica
+            # si intellij marca que no existe es verdad que no existe
+            self.file.write("GET TO THE CHOPPER "+ctx.ID().getText()+'\n')
+            self.file.write("HERE IS MY INVITATION "+ctx.ID().getText()+'\n')
+            self.file.write("GET UP")  # duda :v
+        if ctx.getChild(0).getText() == '-=':
+            self.file.write("GET TO THE CHOPPER "+ctx.ID().getText()+'\n')
+            self.file.write("HERE IS MY INVITATION "+ctx.ID().getText()+'\n')
+            self.file.write("GET DOWN")  # duda :v
+        if ctx.getChild(0).getText() == '*=':
+            self.file.write("GET TO THE CHOPPER "+ctx.ID().getText()+'\n')
+            self.file.write("HERE IS MY INVITATION "+ctx.ID().getText()+'\n')
+            self.file.write("GET DOWN")  # duda :v
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#lexpr.
@@ -76,6 +115,8 @@ class MyVisitor(BCCVisitor):
 
     # Visit a parse tree produced by BCCParser#simple_expr.
     def visitSimple_expr(self, ctx: BCCParser.Simple_exprContext):
+        # for argunment in children:
+            # if argunmment
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#term.
@@ -84,4 +125,41 @@ class MyVisitor(BCCVisitor):
 
     # Visit a parse tree produced by BCCParser#factor.
     def visitFactor(self, ctx: BCCParser.FactorContext):
+        if ctx.TK_BOOL():
+            if ctx.getText() == 'true':
+                return "@NO PROBLEMO"
+            else:
+                return "@I LIED"
+        if ctx.TK_NUM():
+            return ctx.getText()
+        if ctx.ID():
+            if ctx.getChildCount() > 1:
+                if ctx.getChild(1) == ctx.FID():
+                    self.file.write("GET TO THE CHOPPER "+ctx.ID().getText()+'\n')
+                    self.file.write("HERE IS MY INVITATION "+ctx.ID().getText()+'\n')
+                    return ctx.ID().getText()
+                return ctx.getText()
+        if ctx.FID():
+            children = self.visitChildren(ctx)
+            self.file.write("GET YOUR ASS TO MARS result"+str(self.result)+'\n')
+            self.file.write("DO IT NOW "+ctx.FID().getText())
+            if children:
+                for argument in children:
+                    if '--' in argument or '++' in argument:
+                        self.file.write(" "+argument[:-2])
+                    else:
+                        self.file.write(" "+argument)
+            self.file.write("\n")
+            if children:
+                for argument in children:
+                    if '--' in argument or '++' in argument:
+                        self.file.write("GET TO THE CHOPPER "+argument[:-2]+'\n')
+                        self.file.write("HERE IS MY INVITATION "+argument[:-2]+'\n')
+                        if '++' in argument:
+                            self.file.write("GET UP 1\n")
+                        else:
+                            self.file.write("GET DOWN 1\n")
+                        self.file.write("ENOUGH TALK\n")
+            self.result = self.result+1
+            return "result"+str(self.result-1)
         return self.visitChildren(ctx)

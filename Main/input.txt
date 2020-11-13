@@ -1,7 +1,7 @@
 ## funcion min(x, y)
 function @min:num (x:num, y:num)
   {
-  when ((x < y) == true) do return x;
+  when ((x < y) == true) do return x++;
   return y;
   }
 
@@ -18,6 +18,6 @@ function @max:num (x:num, y:num)
     }
   }
 
-print @min(1,2);
+print @min(x++,2);
 print @max(1,2);
 end
