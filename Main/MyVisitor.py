@@ -38,23 +38,16 @@ class MyVisitor(BCCVisitor):
     # Visit a parse tree produced by BCCParser#stmt.
     def visitStmt(self, ctx: BCCParser.StmtContext):
         if ctx.PRINT():
-            if '@' in ctx.getChild(1).getText():
-                children = self.visitChildren(ctx)
-                self.file.write('TALK TO THE HAND result'+str(self.result))
-                if children:
-                    for i in children:
-                        if i == children[0]:
-                            continue
-                        self.file.write(' '+i)
-                self.file.write('\n')
-            else:
-                self.file.write('TALK TO THE HAND '+ctx.getChild(1).getText()+'\n')
+            children = self.visitLexpr(ctx.lexpr()[0])
+            self.file.write('TALK TO THE HAND '+str(children))
+            self.file.write('\n')
+            return None
         if ctx.INPUT():
             command = 'I WANT TO ASK YOU A BUNCH OF QUESTIONS AND I WANT TO HAVE THEM ANSWERED IMMEDIATELY '
             self.file.write(command+ctx.getChild(1).getText()+'\n')
-        if ctx.WHEN():
-            command = 'I WANT TO ASK YOU A BUNCH OF QUESTIONS AND I WANT TO HAVE THEM ANSWERED IMMEDIATELY '
-            self.file.write(command+ctx.getChild(1).getText()+'\n')
+        # if ctx.WHEN():
+        #     command = 'I WANT TO ASK YOU A BUNCH OF QUESTIONS AND I WANT TO HAVE THEM ANSWERED IMMEDIATELY '
+        #     self.file.write(command+ctx.getChild(1).getText()+'\n')
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#assignation.
@@ -72,6 +65,7 @@ class MyVisitor(BCCVisitor):
             else:
                 self.file.write("GET DOWN 1\n")
             self.file.write("ENOUGH TALK\n")
+        return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#do_block.
     def visitDo_block(self, ctx: BCCParser.Do_blockContext):
@@ -134,15 +128,22 @@ class MyVisitor(BCCVisitor):
             return ctx.getText()
         if ctx.ID():
             if ctx.getChildCount() > 1:
-                if ctx.getChild(1) == ctx.FID():
+                if ctx.getChild(1) == ctx.ID():
                     self.file.write("GET TO THE CHOPPER "+ctx.ID().getText()+'\n')
                     self.file.write("HERE IS MY INVITATION "+ctx.ID().getText()+'\n')
+                    if '++' in ctx.getText():
+                        self.file.write("GET UP 1\n")
+                    else:
+                        self.file.write("GET DOWN 1\n")
+                    self.file.write("ENOUGH TALK\n")
                     return ctx.ID().getText()
-                return ctx.getText()
+            return ctx.getText()
         if ctx.FID():
-            children = self.visitChildren(ctx)
+            children = list()
+            for i in ctx.lexpr():
+                children.append(self.visitLexpr(i))
             self.file.write("GET YOUR ASS TO MARS result"+str(self.result)+'\n')
-            self.file.write("DO IT NOW "+ctx.FID().getText())
+            self.file.write("DO IT NOW "+ctx.FID().getText()[1:])
             if children:
                 for argument in children:
                     if '--' in argument or '++' in argument:
