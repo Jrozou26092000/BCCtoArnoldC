@@ -59,11 +59,6 @@ class BCCVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by BCCParser#operation.
-    def visitOperation(self, ctx:BCCParser.OperationContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by BCCParser#lexpr.
     def visitLexpr(self, ctx:BCCParser.LexprContext):
         return self.visitChildren(ctx)

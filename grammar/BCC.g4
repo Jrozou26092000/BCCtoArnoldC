@@ -31,16 +31,13 @@ stmt : PRINT lexpr ';'
       | assignation
       ;
 
-assignation: ID operation ';'
+assignation: ID ((OPERATION lexpr)|('++' | '--'))';'
             | ('--' | '++') ID ';'
             ;
  
 do_block : 'do' stmt_block;
 
 par_lexpr : '(' lexpr ')';
-
-operation : (':=' | '+=' | '-=' | '*=' | '*=' | '/='| '%=') lexpr
-            | ('++' | '--');
 
 lexpr : nexpr ((AND nexpr) | (OR nexpr))*;
 
@@ -66,6 +63,7 @@ WS  :   [ \t\r\n]+ -> skip ; // Define whitespace rule, toss it out
 COMMENT : '#' ~[\r\n]* -> skip ;
 FID : '@' [a-zA-Z] [a-zA-Z_0-9]* ;
 TK_NUM : [0-9]+;
+OPERATION : (':=' | '+=' | '-=' | '*=' | '*=' | '/='| '%=');
 PRINT : 'print';
 INPUT : 'input';
 WHEN : 'when';
