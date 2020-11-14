@@ -1,6 +1,5 @@
 from gen.BCCVisitor import BCCVisitor
 from gen.BCCParser import BCCParser
-import re
 
 
 class MyVisitor(BCCVisitor):
@@ -103,6 +102,8 @@ class MyVisitor(BCCVisitor):
             self.file.write('HERE IS MY INVITATION ')
             if ctx.OPERATION().getText() == ':=':
                 self.file.write(var + '\n')
+            else:
+                self.file.write(ctx.ID().getText() + '\n')
             if ctx.OPERATION().getText() == '+=':
                 self.file.write('GET UP' + var + '\n')
             if ctx.OPERATION().getText() == '-=':
@@ -167,7 +168,7 @@ class MyVisitor(BCCVisitor):
         for argumment in ctx.factor():
             factor.append(self.visitFactor(argumment))
         # Revisar --> Se está imprimiendo el último no terminal dos veces.
-        if len(factor)>1:
+        if len(factor) > 1:
             i = 1
             for symbol in factor:
                 print(symbol)
@@ -182,7 +183,7 @@ class MyVisitor(BCCVisitor):
                     # self.file.write("ENOUGH TALK\n")
                     # return symbol
                 elif '++' in str(symbol) or '--' in str(symbol):
-                    self.file.write(str(symbol)[0]+'\n')
+                    self.file.write(str(symbol)[:-2]+'\n')
                 else:
                     self.file.write(str(symbol)+'\n')
                 if ctx.getChild(i):
@@ -195,7 +196,7 @@ class MyVisitor(BCCVisitor):
                 i += 2
         else:
             return factor[0]
-        return self.visitChildren(ctx)
+        return "variable de term"
 
     # Visit a parse tree produced by BCCParser#factor.
     def visitFactor(self, ctx: BCCParser.FactorContext):
