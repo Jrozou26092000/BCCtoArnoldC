@@ -1,5 +1,6 @@
 from gen.BCCVisitor import BCCVisitor
 from gen.BCCParser import BCCParser
+import re
 
 
 class MyVisitor(BCCVisitor):
@@ -153,12 +154,47 @@ class MyVisitor(BCCVisitor):
 
     # Visit a parse tree produced by BCCParser#simple_expr.
     def visitSimple_expr(self, ctx: BCCParser.Simple_exprContext):
-        # for argunment in children:
-            # if argunmment
+        # Revisar aquí lo de el pos - in/de - cremento cuando se retorn uno solo --> c: a++.
+
+        # print(ctx.getChild(0).getText())
+        # if ctx.getChild(1) and ctx.getChild(1).getText() == '*':
+        #     print("OK")
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#term.
     def visitTerm(self, ctx: BCCParser.TermContext):
+        factor = list()
+        for argumment in ctx.factor():
+            factor.append(self.visitFactor(argumment))
+        # Revisar --> Se está imprimiendo el último no terminal dos veces.
+        if len(factor)>1:
+            i = 1
+            for symbol in factor:
+                print(symbol)
+                if len(str(symbol)) > 1 and (str(symbol)[1] == '+' or str(symbol)[1] == '-'):
+                    print("OK")
+                    # self.file.write("GET TO THE CHOPPER "+(str(symbol)[1]+'\n')
+                    # self.file.write("HERE IS MY INVITATION "+(str(symbol)[1]+'\n')
+                    # if '++' in str(symbol):
+                    #     self.file.write("GET UP 1\n")
+                    # else:
+                    #     self.file.write("GET DOWN 1\n")
+                    # self.file.write("ENOUGH TALK\n")
+                    # return symbol
+                elif '++' in str(symbol) or '--' in str(symbol):
+                    self.file.write(str(symbol)[0]+'\n')
+                else:
+                    self.file.write(str(symbol)+'\n')
+                if ctx.getChild(i):
+                    if ctx.getChild(i).getText() == '*':
+                        self.file.write("YOU'RE FIRED ")
+                    elif ctx.getChild(i).getText() == '/':
+                        self.file.write("HE HAD TO SPLIT ")
+                    elif ctx.getChild(i).getText() == '%':
+                        self.file.write("I LET HIM GO ")
+                i += 2
+        else:
+            return factor[0]
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BCCParser#factor.

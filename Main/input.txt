@@ -1,24 +1,5 @@
-## funcion min(x, y)
-function @min:num (x:num, y:num)
-    var minn:bool;
-  {
-  when ((x < y) == true) do return x++;
-  return y;
-  }
-
-## funcion max(x, y)
-function @max:num (x:num, y:num)
-  {
-  if ((x < y) == false) do
-    {
-    return x;
-    }
-  else
-    {
-    return y;
-    }
-  }
-
-print @min(x++,2);
-print @max(++x,false);
+var a:num,b:num,c:num;
+a := 5;
+b := 7;
+c := --a * b;
 end
