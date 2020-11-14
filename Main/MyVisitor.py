@@ -100,17 +100,17 @@ class MyVisitor(BCCVisitor):
             var = self.visitLexpr(ctx.lexpr())
             self.file.write('GET TO THE CHOPPER ' + ctx.ID().getText()+'\n')
             self.file.write('HERE IS MY INVITATION ')
-            if ctx.getChild(0).getText() == ':=':
+            if ctx.OPERATION().getText() == ':=':
                 self.file.write(var + '\n')
-            if ctx.getChild(0).getText() == '+=':
+            if ctx.OPERATION().getText() == '+=':
                 self.file.write('GET UP' + var + '\n')
-            if ctx.getChild(0).getText() == '-=':
+            if ctx.OPERATION().getText() == '-=':
                 self.file.write('GET DOWN' + var + '\n')
-            if ctx.getChild(0).getText() == '*=':
+            if ctx.OPERATION().getText() == '*=':
                 self.file.write("YOU'RE FIRED" + var + '\n')
-            if ctx.getChild(0).getText() == '/=':
+            if ctx.OPERATION().getText() == '/=':
                 self.file.write('HE HAD TO SPLIT' + var + '\n')
-            if ctx.getChild(0).getText() == '%=':
+            if ctx.OPERATION().getText() == '%=':
                 self.file.write('I LET HIM GO' + var + '\n')
             self.file.write('ENOUGH TALK\n')
         else:
